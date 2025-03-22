@@ -393,8 +393,6 @@ app.post('/v1/chat/completions', apiKeyAuth, async (req, res) => {
   }
 });
 
-
-
 // 健康检查路由
 app.get('/health', async (req, res) => {
   try {
@@ -416,6 +414,15 @@ app.post('/v1/files', apiKeyAuth, async (req, res) => {
   }
 });
 
-app.listen(PROXY_PORT, () => {
-  console.log(`Hybrid AI proxy server started on port ${PROXY_PORT}`);
-});
+// 为Vercel部署修改端口设置
+const port = process.env.PORT || PROXY_PORT || 4120;
+
+// 仅在非生产环境下启动独立服务器
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Hybrid AI proxy server started on port ${port}`);
+  });
+}
+
+// 导出Express应用，供Vercel使用
+export default app;
